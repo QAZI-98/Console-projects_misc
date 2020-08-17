@@ -1,0 +1,209 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace ConsoleApplication7
+{
+    class Program
+    {
+        public static int[] arr = new int[100];
+
+
+        public static bool check_prime(int a)
+        {
+
+            bool isprime = true;
+
+            for (int i = 1; i < a; i++)
+            {
+
+                if (a % i == 0 && i != 1)
+                {
+
+                    //  Console.WriteLine("{0} is not prime",a );
+                    isprime = false;
+                    break;
+
+                }
+
+            }
+            return isprime;
+
+        }
+
+        public static int get_e(int x)
+        {
+            int ret = 0;
+            int a; int w = 0;
+            for (a = 2; a < 100; a++)
+            {
+
+                for (int i = 1; i < a; i++)
+                {
+
+                    if (a % i == 0 && i != 1)
+                    {
+
+                        break;
+                    }
+                    if (i == a - 1)
+                    {
+                        arr[w] = a;
+                        w++;
+
+                    }
+                }
+            }
+
+
+            for (int i = 0; i < w; i++)
+            {
+                //>3 for specif condition
+                if (x % arr[i] != 0 && x > arr[i])
+                {
+                    ret = arr[i];
+                    break;
+                }
+            }
+            return ret;
+
+
+        }
+
+
+
+        public static int get_d(int e, int phi_n)
+        {
+            int i = 1;
+            int temp = phi_n; //160
+            int j = 1;
+
+            while (true)
+            {
+                temp = phi_n * i;
+                temp++;
+                i++;
+                int temb = e;
+                int temp2 = 0;
+                int itt = 1;
+
+                while (temp2 <= temp)
+                {
+                    temp2 = temb * itt;
+                    if (temp2 == temp)
+                    {
+                        return itt;
+                    }
+                    itt++;
+
+                }
+            }
+            return 0;
+
+        }
+
+        static int pt;
+        static void Main(string[] args)
+        {
+
+
+            Console.WriteLine("enter prime #1");
+            int p = int.Parse(Console.ReadLine());
+            Console.WriteLine("enter prime #2");
+            int q = int.Parse(Console.ReadLine());
+            bool aisp = check_prime(p);
+            bool bisp = check_prime(q);
+
+
+            if (aisp == true && bisp == true && p + q > 4)
+            {
+                Console.Clear();
+                int n = p * q;
+                Console.WriteLine("n=" + n);
+                int phi_n = (p - 1) * (q - 1);
+                Console.WriteLine("phi(n)=" + phi_n);
+                int e = 0;
+                e = get_e(phi_n);
+                Console.ReadKey();
+                Console.WriteLine("e=" + e);
+                int d = get_d(e, phi_n);
+                Console.WriteLine("d=" + d);
+                Console.WriteLine("public key={0},{1}", e, n);
+                Console.WriteLine("private key={0},{1},{2}", d, p, q);
+                Console.WriteLine();
+                
+                Console.WriteLine("enter plain text");
+                try
+                {
+
+                 pt = int.Parse(Console.ReadLine());
+                }
+                catch (Exception)
+                {
+                    Console.WriteLine("must be integer");
+                }
+                Console.WriteLine("plain text=" + pt);
+                double ct;
+                double dt;
+
+                if (pt < n)
+                {
+                    ct = Math.Pow(pt, e);
+                    ct = ct % n;
+                    Console.WriteLine("cipher text=" + ct);
+                    double ddt = Math.Pow(ct, d);
+                    double result1 = 1;
+                    double result2 = 1;
+                    double result3 = 1;
+
+
+                    for (int i = 0; i < d; i++)
+                    {
+
+                        if (i < 10)
+                        {
+                            result1 *= ct % n;
+
+                        }
+                        else if (i < 20)
+                        {
+                            result2 *= ct % n;
+
+                        }
+
+                        else
+                        {
+                            result3 *= ct % n;
+                        }
+
+                    }
+
+                    result1 = result1 % n;
+                    result2 = result2 % n;
+                    result3 = result3 % n;
+                    double final = result1 * result2 * result3;
+                    final = final % n;
+                    Console.WriteLine("deciphered text=" + final);
+                }
+
+                else
+                {
+                    Console.WriteLine("plain text size too large");
+                }
+
+
+
+            }
+            else
+            {
+                Console.WriteLine("numbers must be prime and greater than 2");
+                Console.ReadKey();
+            }
+
+
+
+        }
+    }
+}
