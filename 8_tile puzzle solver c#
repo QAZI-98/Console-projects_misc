@@ -1,0 +1,245 @@
+class node
+    {
+        public List<node> list = new List<node>();
+        public node parent ;
+        public int[] arr = new int[9];
+        public int ii = 0;
+
+
+        public node(int[] _arr)
+        {
+            set(_arr);
+        }
+
+        public void set(int[] ar)
+        {
+            for (int i = 0; i < ar.Length; i++)
+            {
+                arr[i] = ar[i];
+            }
+
+        }
+        
+        public void copy(int[] brr,int[] crr)
+        {
+            for (int i = 0; i < brr.Length; i++)
+            {
+                brr[i] = crr[i];
+            }
+        }
+
+        public bool check_goal()
+        {
+            int g = arr[0];
+            bool chk = true;
+            for (int i = 1; i < arr.Length; i++)
+            {
+                if (g>arr[i])
+                    chk = false;
+                g = arr[i];
+            }
+            return chk;
+        }
+
+        public void right(int[] _arr,int index) {
+            ///////////////////////////////////////
+            if (index%3<2)
+            {
+                int[] tar = new int[9];
+                copy(tar, _arr);
+                int temp = tar[index+1];
+                tar[index + 1] = tar[index];
+                tar[index] = temp;
+                node nn = new node(tar);
+                list.Add(nn);
+                nn.parent = this;
+            }
+
+
+
+        }
+        public void left(int[] _arr, int index) {
+            if (index%3>0)
+            {
+                int[] tar = new int[9];
+                copy(tar, _arr);
+                int temp = tar[index -1];
+                tar[index - 1] = tar[index];
+                tar[index] = temp;
+                node nn = new node(tar);
+                list.Add(nn);
+                nn.parent = this;
+
+            }
+
+
+        }
+        public void up(int[] _arr, int index) {
+            if (index-3>=0)
+            {
+                
+            int[] tar = new int[9];
+            copy(tar, _arr);
+            int temp = tar[index - 3];
+            tar[index - 3] = tar[index];
+            tar[index] = temp;
+            node nn = new node(tar);
+            list.Add(nn);
+            nn.parent = this;
+        }
+            
+
+    }
+        public void down(int[] _arr, int index)
+        {
+            if (index + 3 < 9)
+            {
+                int[] tar = new int[9];
+                copy(tar, _arr);
+                int temp = tar[index + 3];
+                tar[index + 3] = tar[index];
+                tar[index] = temp;
+                node nn = new node(tar);
+                list.Add(nn);
+                nn.parent = this;
+            }
+        }
+
+        public void generate_child()
+        {
+            for (int j = 0; j < arr.Length; j++)
+            {
+                if (arr[j]==0)
+                {
+                    ii = j;
+                    
+                }
+            }
+            up(arr, ii);
+            down(arr, ii);
+            right(arr, ii);
+            left(arr, ii);
+        }
+
+
+        public bool repeated(int[] drr)
+        {
+            bool flag=true;
+            for (int i = 0; i < drr.Length; i++)
+            {
+                if (arr[i]!=drr[i])
+                {
+                    flag = false;
+                }
+            }
+            return flag;
+        }
+
+        public void print()
+        {
+            for (int i = 0; i < 9; i++)
+            {
+                if (i % 3 == 0)
+                {
+                    Console.WriteLine();
+                }
+                Console.Write(" "+arr[i]);
+
+            }
+            Console.WriteLine();
+        }
+    }
+
+    class search
+    {
+        public List<node> bfs(node root)
+        {
+            List<node> path = new List<node>();
+            List<node> open = new List<node>();
+            List<node> closed = new List<node>();
+            open.Add(root);
+            bool found = false;
+            while (open.Count>0 && !found)
+            {
+                node cur = open[0];
+                closed.Add(cur);
+                open.RemoveAt(0);
+                cur.generate_child();
+                
+                for (int i = 0; i < cur.list.Count; i++)
+                {
+                    node cc = cur.list[i];
+                    if (cc.check_goal()==true)
+                    {
+                        Console.WriteLine("found");
+                       
+                        found = true;
+                        get_path(path, cc);
+                    }
+                    if (!repeated_check(open,cc) && ! repeated_check(closed,cc))
+                    {
+                        open.Add(cc);
+                    }
+
+                }
+            }
+            return path;
+        }
+
+        public bool repeated_check(List<node> _list, node n)
+        {
+            bool flag = false;
+            for (int i = 0; i < _list.Count; i++)
+            {
+                if (_list[i].repeated(n.arr))
+                    flag = true;
+
+            }
+            return flag;
+        }
+
+        public void get_path(List<node> p,node n)
+        {
+            node c = n;
+            p.Add(c);
+            while (c.parent!=null)
+            {
+                c = c.parent;
+                p.Add(c);
+            }
+
+        }
+    }
+
+
+
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            int[] initial_state = { 1, 2, 4, 3, 0, 5, 7, 6, 8 };
+            node n = new node(initial_state);
+            search so = new search();
+            List<node> sol = so.bfs(n);
+            Console.WriteLine();
+            if (sol.Count>0)
+            {
+                for (int i = 0; i < sol.Count; i++)
+                {
+                   
+                    Console.WriteLine();
+                    sol[i].print();
+                    Console.WriteLine();
+                } 
+            }
+            else
+            {
+                Console.WriteLine("solution does not exist");
+                
+            }
+
+
+
+        }
+    }
+}
